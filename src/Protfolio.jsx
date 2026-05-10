@@ -1224,77 +1224,130 @@ function Education() {
 
 // ─── CONTACT ──────────────────────────────────────────────────────────────────
 function Contact() {
-  const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [sent, setSent] = useState(false);
-  const handleSubmit = (e) => {
+  const [form, setForm] = useState({ name: "", email: "", message: "" });
+  const [sent, setSent]   = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSent(true);
-    setTimeout(() => setSent(false), 3500);
-    setForm({ name: '', email: '', message: '' });
+    setLoading(true);
+    setError("");
+
+    try {
+      await window.emailjs.send(
+        "service_adcwy4f",   // 🔴 replace with new Service ID
+        "template_aw1g6fg",  // 🔴 replace with new Template ID
+        {
+          from_name:  form.name,
+          from_email: form.email,
+          message:    form.message,
+        },
+        "ZHnbf2JYBn29T6Wpm"    // 🔴 replace with new Public Key
+      );
+
+      setSent(true);
+      setForm({ name: "", email: "", message: "" });
+      setTimeout(() => setSent(false), 3500);
+    } catch (err) {
+      console.error("EmailJS error:", err);
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
+
   const contacts = [
-    { icon: '✉️', label: 'Email', value: 'sararubaya4800@gmail.com', href: 'mailto:sararubaya4800@gmail.com' },
-    { icon: '📞', label: 'Phone', value: '+8801846831753', href: 'tel:+8801846831753' },
-    { icon: '💬', label: 'WhatsApp', value: '+8801846831753', href: 'https://wa.me/8801846831753' },
-    { icon: '📍', label: 'Location', value: 'Dhaka, Bangladesh', href: null },
-    { icon: '💼', label: 'LinkedIn', value: 'Sara Rubaya', href: 'https://www.linkedin.com/in/sara-rubaya/' },
+    { icon: "✉️", label: "Email",    value: "sararubaya4800@gmail.com", href: "mailto:sararubaya4800@gmail.com" },
+    { icon: "📞", label: "Phone",    value: "+8801846831753",           href: "tel:+8801846831753" },
+    { icon: "💬", label: "WhatsApp", value: "+8801846831753",           href: "https://wa.me/8801846831753" },
+    { icon: "📍", label: "Location", value: "Dhaka, Bangladesh",        href: null },
+    { icon: "💼", label: "LinkedIn", value: "Sara Rubaya",              href: "https://www.linkedin.com/in/sara-rubaya/" },
   ];
+
   return (
     <Section id="contact" bg={T.warmWhite}>
-      <div className="sr" style={{ textAlign: 'center', marginBottom: '1rem' }}>
+      <div className="sr" style={{ textAlign: "center", marginBottom: "1rem" }}>
         <SectionLabel>Let's Talk</SectionLabel>
-        <SectionTitle>Get in <em style={{ fontStyle: 'italic', color: T.rose }}>Touch</em></SectionTitle>
-        <p style={{ fontSize: '0.97rem', color: T.textSoft, maxWidth: 440, margin: '0.5rem auto 0', lineHeight: 1.8 }}>Have a project in mind or just want to say hello? I'd love to hear from you.</p>
+        <SectionTitle>Get in <em style={{ fontStyle: "italic", color: T.rose }}>Touch</em></SectionTitle>
+        <p style={{ fontSize: "0.97rem", color: T.textSoft, maxWidth: 440, margin: "0.5rem auto 0", lineHeight: 1.8 }}>
+          Have a project in mind or just want to say hello? I'd love to hear from you.
+        </p>
       </div>
-      <div className="two-col" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', marginTop: '3rem', alignItems: 'start' }}>
+
+      <div className="two-col" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "4rem", marginTop: "3rem", alignItems: "start" }}>
+
+        {/* ── Left: contact info ── */}
         <div className="sr-left">
-          {contacts.map(c => (
-            <div key={c.label} style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1rem 0', borderBottom: `1px solid rgba(201,102,122,0.1)` }}>
-              <div style={{ width: 44, height: 44, borderRadius: 14, background: T.rosePale, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem', flexShrink: 0 }}>{c.icon}</div>
+          {contacts.map((c) => (
+            <div key={c.label} style={{ display: "flex", alignItems: "center", gap: "1rem", padding: "1rem 0", borderBottom: `1px solid rgba(201,102,122,0.1)` }}>
+              <div style={{ width: 44, height: 44, borderRadius: 14, background: T.rosePale, display: "flex", alignItems: "center", justifyContent: "center", fontSize: "1.1rem", flexShrink: 0 }}>
+                {c.icon}
+              </div>
               <div>
-                <div style={{ fontSize: '0.74rem', color: T.textSoft, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: '0.15rem' }}>{c.label}</div>
-                {c.href ? <a href={c.href} target="_blank" rel="noreferrer" style={{ fontSize: '0.9rem', color: T.textDark, fontWeight: 500 }}>{c.value}</a> : <div style={{ fontSize: '0.9rem', color: T.textDark, fontWeight: 500 }}>{c.value}</div>}
+                <div style={{ fontSize: "0.74rem", color: T.textSoft, textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "0.15rem" }}>{c.label}</div>
+                {c.href
+                  ? <a href={c.href} target="_blank" rel="noreferrer" style={{ fontSize: "0.9rem", color: T.textDark, fontWeight: 500 }}>{c.value}</a>
+                  : <div style={{ fontSize: "0.9rem", color: T.textDark, fontWeight: 500 }}>{c.value}</div>
+                }
               </div>
             </div>
           ))}
         </div>
+
+        {/* ── Right: form ── */}
         <div className="sr-right">
           <form onSubmit={handleSubmit}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.1rem' }}>
-              <FormField label="Your Name" value={form.name} onChange={v => setForm(f => ({ ...f, name: v }))} placeholder="Sara..." />
-              <FormField label="Email" type="email" value={form.email} onChange={v => setForm(f => ({ ...f, email: v }))} placeholder="you@example.com" />
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1.1rem" }}>
+              <FormField label="Your Name"  value={form.name}    onChange={(v) => setForm((f) => ({ ...f, name: v }))}    placeholder="Sara..." />
+              <FormField label="Email" type="email" value={form.email} onChange={(v) => setForm((f) => ({ ...f, email: v }))} placeholder="you@example.com" />
             </div>
-            <FormField label="Message" textarea value={form.message} onChange={v => setForm(f => ({ ...f, message: v }))} placeholder="Tell me about your project or just say hello ✦" />
-            <BtnPrimary onClick={() => {}} style={{
-              width: '100%', justifyContent: 'center', marginTop: '0.75rem',
-              background: sent ? 'linear-gradient(135deg,#6bcf8a,#3aab6a)' : `linear-gradient(135deg,${T.rose},${T.mauve})`,
-            }}>
-              {sent ? 'Message sent ✦' : 'Send Message ✦'}
+            <FormField label="Message" textarea value={form.message} onChange={(v) => setForm((f) => ({ ...f, message: v }))} placeholder="Tell me about your project or just say hello ✦" />
+
+            {error && (
+              <p style={{ color: "#e05a5a", fontSize: "0.85rem", marginBottom: "0.5rem" }}>{error}</p>
+            )}
+
+            <BtnPrimary
+              onClick={() => {}}
+              disabled={loading}
+              style={{
+                width: "100%",
+                justifyContent: "center",
+                marginTop: "0.75rem",
+                opacity: loading ? 0.7 : 1,
+                background: sent
+                  ? "linear-gradient(135deg,#6bcf8a,#3aab6a)"
+                  : `linear-gradient(135deg,${T.rose},${T.mauve})`,
+              }}
+            >
+              {loading ? "Sending…" : sent ? "Message sent ✦" : "Send Message ✦"}
             </BtnPrimary>
           </form>
         </div>
+
       </div>
     </Section>
   );
 }
 
-function FormField({ label, value, onChange, placeholder, type = 'text', textarea }) {
+function FormField({ label, value, onChange, placeholder, type = "text", textarea }) {
   const [focused, setFocused] = useState(false);
   const shared = {
-    width: '100%', padding: '0.75rem 1rem', background: T.cream,
-    border: `1.5px solid ${focused ? T.rose : 'rgba(201,102,122,0.22)'}`,
-    borderRadius: 12, fontFamily: "'DM Sans', sans-serif", fontSize: '0.9rem',
-    color: T.textDark, outline: 'none',
-    boxShadow: focused ? `0 0 0 3px rgba(201,102,122,0.12)` : 'none',
-    transition: 'border-color .2s, box-shadow .2s', resize: 'none',
+    width: "100%", padding: "0.75rem 1rem", background: T.cream,
+    border: `1.5px solid ${focused ? T.rose : "rgba(201,102,122,0.22)"}`,
+    borderRadius: 12, fontFamily: "'DM Sans', sans-serif", fontSize: "0.9rem",
+    color: T.textDark, outline: "none",
+    boxShadow: focused ? `0 0 0 3px rgba(201,102,122,0.12)` : "none",
+    transition: "border-color .2s, box-shadow .2s", resize: "none",
   };
   return (
-    <div style={{ marginBottom: '1.1rem' }}>
-      <label style={{ display: 'block', fontSize: '0.82rem', color: T.textMid, marginBottom: '0.4rem', fontWeight: 500 }}>{label}</label>
+    <div style={{ marginBottom: "1.1rem" }}>
+      <label style={{ display: "block", fontSize: "0.82rem", color: T.textMid, marginBottom: "0.4rem", fontWeight: 500 }}>{label}</label>
       {textarea ? (
-        <textarea rows={5} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} style={shared} />
+        <textarea rows={5} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} style={shared} />
       ) : (
-        <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} style={shared} />
+        <input type={type} value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)} style={shared} />
       )}
     </div>
   );
